@@ -1,4 +1,4 @@
-from dotenv import load_dotenv # type: ignore
+from dotenv import load_dotenv
 import os
 
 load_dotenv()
@@ -11,10 +11,8 @@ LOCATION_ID = "0-EU-PT-31" # Madeira Island ID
 LOCATION_NAME = "Madeira"
 MAX_ITEMS_PER_PAGE = 40
 
-DAILY_FETCH_TIME = "13:00" # Time to run daily fetch (24-hour format)
-
 SENDER_EMAIL = os.getenv('SENDER_EMAIL')
-SENDER_PASSWORD = os.getenv('EMAIL_PASSWORD')
+SENDER_APP_PASSWORD = os.getenv('SENDER_APP_PASSWORD')
 
 RECIPIENT_EMAIL_ONE = os.getenv('RECIPIENT_EMAIL_ONE')
 RECIPIENT_EMAIL_TWO = os.getenv('RECIPIENT_EMAIL_TWO')

@@ -1,6 +1,6 @@
 from config import API_URL, API_KEY, API_HOST, LOCATION_ID, LOCATION_NAME, MAX_ITEMS_PER_PAGE
-import requests # type: ignore
-import pandas as pd # type: ignore
+import requests
+import pandas as pd
 import time
 
 
@@ -86,14 +86,37 @@ def global_fetch(location_id = LOCATION_ID, location_name = LOCATION_NAME):
 
     print(f"Completed fetching all {total_listings} listings from the {total_pages} pages!")
 
-    return all_listings
+    df = pd.DataFrame(all_listings)
+
+    return df
 
 
-def save_to_csv(listings, filename='../data/madeira_listings.csv'):
-    
-    df = pd.DataFrame(listings)
-    df.to_csv(filename, index=False, encoding='utf-8-sig')
-    print(f"Saved {len(listings)} listings to {filename}")
 
-all_listings = global_fetch()
-save_to_csv(all_listings)
+def daily_fetch(location_id = LOCATION_ID, location_name = LOCATION_NAME):
+
+    params = {
+        "order": "mostrecent",
+        "operation": "sale",
+        "locationId": location_id,
+        "locationName": location_name,
+        "numPage": "1",
+        "maxItems": "40",
+        "location": "pt",
+        "locale": "pt"
+    }
+
+    headers = {
+	    "x-rapidapi-key": API_KEY,
+	    "x-rapidapi-host": API_HOST
+    }
+
+    response = requests.get(API_URL, headers=headers, params=params)
+
+    if response.status_code == 200:
+        data = response.json()
+        listings = data.get('elementList', [])
+        df = pd.DataFrame(listings)
+        return df
+    else:
+        print(f"Error: Unable to fetch most recent listings. Status code: {response.status_code}")
+        return pd.DataFrame()
