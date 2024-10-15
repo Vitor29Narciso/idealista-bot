@@ -1,4 +1,4 @@
-from config import API_URL, API_KEY, API_HOST, LOCATION_ID, LOCATION_NAME, MAX_ITEMS_PER_PAGE
+from .config import API_URL, API_KEY, API_HOST, LOCATION_ID, LOCATION_NAME, MAX_ITEMS_PER_PAGE
 import requests
 import pandas as pd
 import time
@@ -76,13 +76,13 @@ def global_fetch(location_id = LOCATION_ID, location_name = LOCATION_NAME):
         listings = data.get('elementList', [])
 
         all_listings.extend(listings)
-        print(f"Fetched {len(listings)} listings from page {page_number}")
+        print(f"Fetched {len(listings)} listings from page {page_number} out of {total_pages} pages")
 
         if len(listings) < listings_per_page:
             break # If the current page returned fewer than expected, we're also done
 
         page_number += 1
-        time.sleep(2)
+        time.sleep(3)
 
     print(f"Completed fetching all {total_listings} listings from the {total_pages} pages!")
 

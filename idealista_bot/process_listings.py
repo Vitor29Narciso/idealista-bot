@@ -1,4 +1,4 @@
-from config import LOCATION_NAME
+from .config import LOCATION_NAME
 import pandas as pd
 import os
 
@@ -6,7 +6,7 @@ import os
 
 def global_process(df, location_name = LOCATION_NAME):
     
-    filename = '../data/' + location_name.lower() + '_listings.csv'
+    filename = './data/' + location_name.lower() + '_listings.csv'
     df.to_csv(filename, index=False, encoding='utf-8-sig')
 
     print("Saved " + str(df.shape[0]) + f" listings to {filename}")
@@ -15,27 +15,35 @@ def global_process(df, location_name = LOCATION_NAME):
 
 def daily_process(new_df, location_name = LOCATION_NAME):
 
-    filename = '../data/' + location_name.lower() + '_listings.csv'
+    filename = './data/' + location_name.lower() + '_listings.csv'
 
     if os.path.exists(filename):
         current_df = pd.read_csv(filename)
+        print(current_df.head())
     else:
         print("CSV file does not exist.")
         return pd.DataFrame()
 
+    # Ensure consistent data types
+    new_df['propertyCode'] = new_df['propertyCode'].astype(str).str.strip()
+    new_df['price'] = new_df['price'].astype(float)
+
+    current_df['propertyCode'] = current_df['propertyCode'].astype(str).str.strip()
+    current_df['price'] = current_df['price'].astype(float)
+
     new_listings = []
+
+    current_listing_dict = dict(zip(current_df['propertyCode'], current_df['price']))
 
     for _, new_row in new_df.iterrows():
         id = new_row['propertyCode']
         new_price = new_row['price']
 
-        existing_row = current_df[current_df['propertyCode'] == id]
-
-        if existing_row.empty:
+        if id not in current_listing_dict:
             new_row['flag'] = 'new'
             new_listings.append(new_row)
         else:
-            existing_price = existing_row['price'].values[0]
+            existing_price = current_listing_dict[id]
 
             if new_price != existing_price:
                 # Price has changed, mark as updated
@@ -52,7 +60,11 @@ def daily_process(new_df, location_name = LOCATION_NAME):
     updated_df = pd.DataFrame(new_listings)
     updated_df_no_old_price = updated_df.copy()
 
-    updated_df_no_old_price = updated_df_no_old_price.drop(columns=['status', 'old_price'])
+    for col in ['flag', 'old_price']:
+        if col in updated_df_no_old_price.columns:
+            updated_df_no_old_price = updated_df_no_old_price.drop(columns=[col])
+        else:
+            print(f"Column '{col}' does not exist in the DataFrame.")
 
     # Concatenate the new and updated listings with the current listings
     final_df = pd.concat([updated_df_no_old_price, current_df], ignore_index=True)

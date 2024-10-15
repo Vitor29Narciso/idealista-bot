@@ -2,6 +2,7 @@ from idealista_bot.fetch_listings import global_fetch, daily_fetch
 from idealista_bot.process_listings import global_process, daily_process
 from idealista_bot.notify import send_email
 from idealista_bot.config import LOCATION_NAME
+from datetime import datetime
 import pandas as pd
 import schedule
 import time
@@ -15,9 +16,13 @@ def daily_task():
     
     updated_df = daily_process(new_df)
 
-    # send_email(updated_df)
+    current_time = datetime.now()
+    formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
     
-    print("Daily fetch, processing and notification completed!")
+    if not updated_df.empty:
+        send_email(updated_df, formatted_time)
+
+    print(f"[{formatted_time}] Fetch, processing and notification completed!")
     print(updated_df)
 
 

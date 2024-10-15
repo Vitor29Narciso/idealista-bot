@@ -1,14 +1,24 @@
-from config import LOCATION_NAME, SENDER_EMAIL, SENDER_APP_PASSWORD, RECIPIENT_EMAIL_ONE, RECIPIENT_EMAIL_TWO, RECIPIENT_EMAIL_THREE
+from .config import LOCATION_NAME, SENDER_EMAIL, SENDER_APP_PASSWORD, RECIPIENT_EMAIL_ONE, RECIPIENT_EMAIL_TWO, RECIPIENT_EMAIL_THREE
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 import pandas as pd
+import locale
 
 
 
 recipients = [RECIPIENT_EMAIL_ONE, RECIPIENT_EMAIL_TWO, RECIPIENT_EMAIL_THREE]
 
+
+locale.setlocale(locale.LC_ALL, 'pt_PT.UTF-8')  # Make sure this locale is available on your system
+
+
+
+def format_price(price):
+    # Format price as a string in euros
+    formatted_price = locale.currency(price, grouping=True, symbol=True)
+    return formatted_price
 
 
 def build_title(property_type, rooms, address):
@@ -33,9 +43,9 @@ def build_title(property_type, rooms, address):
 
 
 
-def send_email(updated_df):
+def send_email(updated_df, time):
 
-    subject = "[Idealista Bot] " + str(updated_df.shape[0]) + f" Novos Anúncios no/a {LOCATION_NAME}"
+    subject = "[Idealista Bot] " + str(updated_df.shape[0]) + f" Novos Anúncios no/a {LOCATION_NAME} ({time})"
 
     msg = MIMEMultipart('related')
     msg['Subject'] = subject
@@ -56,26 +66,26 @@ def send_email(updated_df):
             </style>
         </head>
         <body>
-            <h2>Updated Property Listings</h2>
             <table>
                 <tr>
-                    <th>Image</th>
-                    <th>Title</th>
-                    <th>Price</th>
-                    <th>Location</th>
-                    <th>Status</th>
+                    <th>Imagem</th>
+                    <th>Título</th>
+                    <th>Preço</th>
+                    <th>Morada</th>
+                    <th>Estado</th>
                 </tr>
     """
 
     # Populate the HTML with updated listings
     for index, row in updated_df.iterrows():
-        image_url = row['thumbnail'] if 'image' in row else 'data/default_image.webp'
+        image_url = row['thumbnail'] 
         property_url = row['url']  # Assuming there is a 'url' column in updated_df
         address = row['address']  # Assuming there is an 'address' column
         province = row['province']  # Assuming there is a 'province' column
         municipality = row['municipality']  # Assuming there is a 'municipality' column
         property_type = row['propertyType']  # Assuming there is a 'propertyType' column
         rooms = row.get('rooms')  # Assuming there is a 'rooms' column
+        price = format_price(float(row['price']))
 
         location_info = f"{address}<br>{municipality}, {province}"  # Format location
 
@@ -85,9 +95,9 @@ def send_email(updated_df):
             <tr>
                 <td><img src="{image_url}" alt="Property Image"></td>
                 <td><a href="{property_url}" target="_blank">{title}</a></td>
-                <td>{row['price']}</td>
+                <td>{price}</td>
                 <td>{location_info}</td>
-                <td>{row['status']}</td>
+                <td>{row['flag']}</td>
             </tr>
         """
 
@@ -114,7 +124,7 @@ def send_email(updated_df):
 # updated_df = ... # Your updated DataFrame with property data
 # send_email(updated_df, ['recipient1@example.com', 'recipient2@example.com'])
 
-from fetch_listings import daily_fetch
+# from fetch_listings import daily_fetch
 
-updated_df = daily_fetch()
-send_email(updated_df)
+# updated_df = daily_fetch()
+# send_email(updated_df)
