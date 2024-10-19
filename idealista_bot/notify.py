@@ -71,6 +71,8 @@ def send_email(updated_df, time):
                     <th>Imagem</th>
                     <th>Título</th>
                     <th>Preço</th>
+                    <th>Área</th>
+                    <th>Preço/m²</th>
                     <th>Morada</th>
                     <th>Estado</th>
                 </tr>
@@ -79,14 +81,18 @@ def send_email(updated_df, time):
     # Populate the HTML with updated listings
     for index, row in updated_df.iterrows():
         image_url = row['thumbnail'] 
-        property_url = row['url']  # Assuming there is a 'url' column in updated_df
-        address = row['address']  # Assuming there is an 'address' column
-        province = row['province']  # Assuming there is a 'province' column
-        municipality = row['municipality']  # Assuming there is a 'municipality' column
-        property_type = row['propertyType']  # Assuming there is a 'propertyType' column
-        rooms = row.get('rooms')  # Assuming there is a 'rooms' column
-        price = format_price(float(row['price']))
+        property_url = row['url']
+        address = row['address']
+        province = row['province']
+        municipality = row['municipality']
+        property_type = row['propertyType']
+        rooms = row['rooms'] 
+        price = row['price']
+        area = f"{row['size']} m²"
+        price_per_sqm = row['priceByArea']
 
+        formatted_price = f"€ {price:,.2f}"
+        formatted_price_per_sqm = f"{price_per_sqm:,.2f} €/m²"
         location_info = f"{address}<br>{municipality}, {province}"  # Format location
 
         title = build_title(property_type, rooms, address)
@@ -95,7 +101,9 @@ def send_email(updated_df, time):
             <tr>
                 <td><img src="{image_url}" alt="Property Image"></td>
                 <td><a href="{property_url}" target="_blank">{title}</a></td>
-                <td>{price}</td>
+                <td>{formatted_price}</td>
+                <td>{area}</td>
+                <td>{formatted_price_per_sqm}</td>
                 <td>{location_info}</td>
                 <td>{row['flag']}</td>
             </tr>
