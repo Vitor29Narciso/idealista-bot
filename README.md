@@ -15,15 +15,15 @@ To run this project locally or on a Raspberry Pi, follow these steps:
 
 ### 1. Clone the Repository
 ```bash
-$ git clone https://github.com/vitor29narciso/idealista-bot.git
-$ cd idealista-bot
+git clone https://github.com/vitor29narciso/idealista-bot.git
+cd idealista-bot
 ```
 
 ### 2. Set Up the Environment
 #### Dependencies
 Install the required Python packages:
 ```bash
-$ pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 #### Environment Variables
@@ -71,7 +71,7 @@ Idealista-Bot/
 
 To schedule notifications from the bot, use `cron` to run the bot at a certain time of the day. Add the following line to your `crontab`:
 ```bash
-$ 0 HH * * * /usr/bin/python3 /path/to/idealista-bot/main.py >> /path/to/idealista-bot/log.txt 2>&1
+0 HH * * * /usr/bin/python3 /path/to/idealista-bot/main.py >> /path/to/idealista-bot/log.txt 2>&1
 ```
 **Note:**
 * Replace `HH` with the hour you want to send your daily notification.
