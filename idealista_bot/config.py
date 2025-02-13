@@ -7,7 +7,7 @@ API_URL = "https://idealista7.p.rapidapi.com/listhomes"
 API_KEY = os.getenv('API_KEY')
 API_HOST = "idealista7.p.rapidapi.com"
 
-LOCATION_ID = "0-EU-PT-31" # Madeira Island ID
+LOCATION_ID = "0-EU-PT-31" # Madeira Island ID | 0-EU-PT-31-03 Funchal, Madeira ID
 LOCATION_NAME = "Madeira"
 MAX_ITEMS_PER_PAGE = 40
 

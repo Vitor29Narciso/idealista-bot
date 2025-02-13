@@ -15,7 +15,14 @@ def get_total_listings(location_id = LOCATION_ID, location_name = LOCATION_NAME)
         "numPage": "1",
         "maxItems": "0",
         "location": "pt",
-        "locale": "pt"
+        "locale": "pt",
+        "minPrice": "100000",
+        "maxPrice": "300000",
+        "flat": True,
+        "bedrooms0": False,
+        "bedrooms1": True,
+        "bedrooms2": True,
+        "bedrooms3": True
     }
 
     headers = {
@@ -58,7 +65,14 @@ def global_fetch(location_id = LOCATION_ID, location_name = LOCATION_NAME):
         "numPage": page_number,
         "maxItems": MAX_ITEMS_PER_PAGE,
         "location": "pt",
-        "locale": "pt"
+        "locale": "pt",
+        "minPrice": "100000",
+        "maxPrice": "300000",
+        "flat": True,
+        "bedrooms0": False,
+        "bedrooms1": True,
+        "bedrooms2": True,
+        "bedrooms3": True
     }
 
         headers = {
@@ -102,7 +116,14 @@ def daily_fetch(location_id = LOCATION_ID, location_name = LOCATION_NAME):
         "numPage": "1",
         "maxItems": "40",
         "location": "pt",
-        "locale": "pt"
+        "locale": "pt",
+        "minPrice": "100000",
+        "maxPrice": "300000",
+        "flat": True,
+        "bedrooms0": False,
+        "bedrooms1": True,
+        "bedrooms2": True,
+        "bedrooms3": True
     }
 
     headers = {

@@ -6,7 +6,7 @@ import os
 
 def global_process(df, location_name = LOCATION_NAME):
     
-    filename = './data/' + location_name.lower() + '_listings.csv'
+    filename = '/Users/vitor29narciso/Documents/Tech Projects/Idealista Bot/Idealista-Bot/data/' + location_name.lower() + '_cheap_flats_listings.csv'
     df.to_csv(filename, index=False, encoding='utf-8-sig')
 
     print("Saved " + str(df.shape[0]) + f" listings to {filename}")
@@ -15,7 +15,7 @@ def global_process(df, location_name = LOCATION_NAME):
 
 def daily_process(new_df, location_name = LOCATION_NAME):
 
-    filename = './data/' + location_name.lower() + '_listings.csv'
+    filename = '/Users/vitor29narciso/Documents/Tech Projects/Idealista Bot/Idealista-Bot/data/' + location_name.lower() + '_cheap_flats_listings.csv'
 
     if os.path.exists(filename):
         current_df = pd.read_csv(filename)
