@@ -59,7 +59,7 @@ def send_email(updated_df, time):
             <style>
                 body {font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background-color: #f8f9fa;}
                 .email-container {max-width: 1200px; margin: 0 auto; background-color: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden;}
-                .header {background: linear-gradient(135deg, #2E86C1 0%, #3498DB 100%); color: white; padding: 20px 30px; text-align: center;}
+                .header {background: linear-gradient(135deg, #2E86C1 0%, #3498DB 100%); color: white; padding: 15px 30px; text-align: center;}
                 .header h2 {margin: 0; font-size: 28px; font-weight: 700; font-family: 'Nunito', 'Poppins', 'Comfortaa', 'Quicksand', 'Rubik', sans-serif; letter-spacing: 0.5px; border-radius: 50px;}
                 .info-section {padding: 20px 30px; background-color: #f8f9fa; border-bottom: 1px solid #e9ecef;}
                 .info-section p {margin: 5px 0; color: #6c757d;}
@@ -70,7 +70,10 @@ def send_email(updated_df, time):
                 tr:nth-child(even) {background-color: #f8f9fa;}
                 tr:hover {background-color: #e3f2fd; transition: background-color 0.2s ease;}
                 img {width: 90px; height: 60px; object-fit: cover; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
-                .price {font-weight: bold; color: #27AE60; text-align: right; font-size: 16px;}
+                .price {font-weight: bold; text-align: right; font-size: 16px;}
+                .price-low {color: #27AE60;}     /* Green for under 300k */
+                .price-medium {color: #F39C12;}  /* Yellow/Orange for 300k-350k */
+                .price-high {color: #C0392B;}    /* Red-orange for over 350k */
                 .area, .price-per-sqm {text-align: center; font-weight: 500;}
                 .garage-yes {color: #27AE60; font-weight: bold; text-align: center;}
                 .garage-no {color: #E74C3C; text-align: center;}
@@ -126,6 +129,14 @@ def send_email(updated_df, time):
         formatted_price_per_sqm = f"{price_per_sqm:,.2f} €/m²"
         location_info = f"{address}<br>{municipality}, {province}"  # Format location
         
+        # Determine price color based on value
+        if price < 300000:
+            price_class = "price price-low"      # Green for under 300k
+        elif price <= 350000:
+            price_class = "price price-medium"   # Yellow for 300k-350k
+        else:
+            price_class = "price price-high"     # Orange for over 350k
+        
         # Get garage information (check multiple possible fields)
         garage = False
         
@@ -163,7 +174,7 @@ def send_email(updated_df, time):
             <tr>
                 <td><img src="{image_url}" alt="Property Image"></td>
                 <td class="title-cell"><a href="{property_url}" target="_blank">{title}</a></td>
-                <td class="price">{formatted_price}</td>
+                <td class="{price_class}">{formatted_price}</td>
                 <td class="area">{area}</td>
                 <td class="price-per-sqm">{formatted_price_per_sqm}</td>
                 <td class="{garage_class}">{garage_text}</td>
