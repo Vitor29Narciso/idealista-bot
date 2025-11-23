@@ -1,6 +1,6 @@
 # Idealista Bot
 
-A bot designed to monitor real estate listings on Idealista. It fetches and anlyzes property data daily, and sends email notifications for possible new investment opportunities.
+A bot designed to monitor real estate listings on Idealista. It fetches and analyzes property data daily, and sends email notifications for possible new investment opportunities.
 
 ## Features
 
