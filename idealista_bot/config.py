@@ -29,8 +29,7 @@ API_PARAMS = {
     "bedrooms0": False,
     "bedrooms1": True,
     "bedrooms2": True,
-    "bedrooms3": True,
-    "garage": True
+    "bedrooms3": True
 }
 
 SENDER_EMAIL = os.getenv('SENDER_EMAIL')

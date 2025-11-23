@@ -57,27 +57,45 @@ def send_email(updated_df, time):
     <html>
         <head>
             <style>
-                body {font-family: Arial, sans-serif; margin: 20px;}
-                h2 {color: #2E86C1;}
-                table {width: 100%; border-collapse: collapse; margin-top: 20px;}
-                th, td {border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top;}
-                th {background-color: #f2f2f2; font-weight: bold; text-align: center;}
-                img {width: 80px; height: auto; border-radius: 4px;}
-                .price {font-weight: bold; color: #27AE60;}
-                .garage-yes {color: #27AE60; font-weight: bold;}
-                .garage-no {color: #E74C3C;}
-                .parish {font-weight: bold; color: #8E44AD;}
-                .flag-new {background-color: #D5DBDB; color: #2C3E50; font-weight: bold; padding: 4px 8px; border-radius: 4px;}
-                .flag-updated {background-color: #F7DC6F; color: #B7950B; font-weight: bold; padding: 4px 8px; border-radius: 4px;}
-                a {color: #2E86C1; text-decoration: none;}
-                a:hover {text-decoration: underline;}
+                body {font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background-color: #f8f9fa;}
+                .email-container {max-width: 1200px; margin: 0 auto; background-color: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden;}
+                .header {background: linear-gradient(135deg, #2E86C1 0%, #3498DB 100%); color: white; padding: 20px 30px; text-align: center;}
+                .header h2 {margin: 0; font-size: 28px; font-weight: 700; font-family: 'Nunito', 'Poppins', 'Comfortaa', 'Quicksand', 'Rubik', sans-serif; letter-spacing: 0.5px; border-radius: 50px;}
+                .info-section {padding: 20px 30px; background-color: #f8f9fa; border-bottom: 1px solid #e9ecef;}
+                .info-section p {margin: 5px 0; color: #6c757d;}
+                .table-container {padding: 0; overflow-x: auto;}
+                table {width: 100%; border-collapse: collapse; margin: 0;}
+                th {background-color: #343a40; color: white; padding: 15px 10px; text-align: center; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;}
+                td {padding: 15px 10px; border-bottom: 1px solid #e9ecef; vertical-align: middle;}
+                tr:nth-child(even) {background-color: #f8f9fa;}
+                tr:hover {background-color: #e3f2fd; transition: background-color 0.2s ease;}
+                img {width: 90px; height: 60px; object-fit: cover; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+                .price {font-weight: bold; color: #27AE60; text-align: right; font-size: 16px;}
+                .area, .price-per-sqm {text-align: center; font-weight: 500;}
+                .garage-yes {color: #27AE60; font-weight: bold; text-align: center;}
+                .garage-no {color: #E74C3C; text-align: center;}
+                .parish {font-weight: bold; color: #8E44AD; text-align: center;}
+                .flag-new {background-color: #28a745; color: white; font-weight: bold; padding: 6px 12px; border-radius: 20px; font-size: 12px; text-transform: uppercase;}
+                .flag-updated {background-color: #ffc107; color: #212529; font-weight: bold; padding: 6px 12px; border-radius: 20px; font-size: 12px; text-transform: uppercase;}
+                .status-cell {text-align: center;}
+                a {color: #2E86C1; text-decoration: none; font-weight: 500;}
+                a:hover {color: #1B4F72; text-decoration: underline;}
+                .title-cell {max-width: 250px; word-wrap: break-word;}
+                .address-cell {max-width: 200px; word-wrap: break-word; font-size: 13px; color: #6c757d;}
+                .footer {padding: 20px 30px; text-align: center; background-color: #f8f9fa; color: #6c757d; font-size: 12px; border-top: 1px solid #e9ecef;}
             </style>
         </head>
         <body>
-            <h2>🏠 Novos Anúncios no/a {LOCATION_NAME}</h2>
-            <p><strong>Data:</strong> {time}<br>
-            <strong>Total de anúncios:</strong> {updated_df.shape[0]}</p>
-            <table>
+            <div class="email-container">
+                <div class="header">
+                    <h2>Novos Anúncios no/a """ + LOCATION_NAME + """</h2>
+                </div>
+                <div class="info-section">
+                    <p><strong>Total de anúncios:</strong> """ + str(updated_df.shape[0]) + """</p>
+                    <p><strong>Data:</strong> """ + time + """</p>
+                </div>
+                <div class="table-container">
+                    <table>
                 <tr>
                     <th>Imagem</th>
                     <th>Título</th>
@@ -108,8 +126,21 @@ def send_email(updated_df, time):
         formatted_price_per_sqm = f"{price_per_sqm:,.2f} €/m²"
         location_info = f"{address}<br>{municipality}, {province}"  # Format location
         
-        # Get garage information (simple True/False)
-        garage = row.get('garage', False)
+        # Get garage information (check multiple possible fields)
+        garage = False
+        
+        # Check various garage-related fields
+        if 'garage' in row and row['garage']:
+            garage = True
+        elif 'parkingSpace' in row and row['parkingSpace']:
+            garage = True
+        elif 'hasParkingSpace' in row and row['hasParkingSpace']:
+            garage = True
+        elif isinstance(row.get('features'), str) and 'parking' in row['features'].lower():
+            garage = True
+        elif isinstance(row.get('features'), dict) and row['features'].get('hasParkingSpace'):
+            garage = True
+            
         garage_text = "Sim" if garage else "Não"
         garage_class = "garage-yes" if garage else "garage-no"
         
@@ -131,19 +162,26 @@ def send_email(updated_df, time):
         html_content += f"""
             <tr>
                 <td><img src="{image_url}" alt="Property Image"></td>
-                <td><a href="{property_url}" target="_blank">{title}</a></td>
+                <td class="title-cell"><a href="{property_url}" target="_blank">{title}</a></td>
                 <td class="price">{formatted_price}</td>
-                <td>{area}</td>
-                <td>{formatted_price_per_sqm}</td>
+                <td class="area">{area}</td>
+                <td class="price-per-sqm">{formatted_price_per_sqm}</td>
                 <td class="{garage_class}">{garage_text}</td>
-                <td>{location_info}</td>
+                <td class="address-cell">{location_info}</td>
                 <td class="parish">{parish_name}</td>
-                <td><span class="{flag_class}">{flag_text}</span></td>
+                <td class="status-cell"><span class="{flag_class}">{flag_text}</span></td>
             </tr>
         """
 
     html_content += """
-            </table>
+                    </table>
+                </div>
+                <div class="footer">
+                    <p>Idealista Bot - Monitorização Automática de Propriedades</p>
+                    <p>Este email foi gerado automaticamente.</p>
+                    <p>© 2025 Vítor Narciso. Todos os direitos reservados.</p>
+                </div>
+            </div>
         </body>
     </html>
     """
