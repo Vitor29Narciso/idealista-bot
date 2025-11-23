@@ -6,7 +6,14 @@ import os
 
 def global_process(df, location_name = LOCATION_NAME):
     
-    filename = '/Users/vitor29narciso/Documents/Tech Projects/Idealista Bot/Idealista-Bot/data/' + location_name.lower() + '_cheap_flats_listings.csv'
+    # Get the directory where this script is located, then go up one level to project root
+    script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    data_dir = os.path.join(script_dir, 'data')
+    
+    # Ensure data directory exists
+    os.makedirs(data_dir, exist_ok=True)
+    
+    filename = os.path.join(data_dir, f"{location_name.lower()}_listings.csv")
     df.to_csv(filename, index=False, encoding='utf-8-sig')
 
     print("Saved " + str(df.shape[0]) + f" listings to {filename}")
@@ -15,11 +22,31 @@ def global_process(df, location_name = LOCATION_NAME):
 
 def daily_process(new_df, location_name = LOCATION_NAME):
 
-    filename = '/Users/vitor29narciso/Documents/Tech Projects/Idealista Bot/Idealista-Bot/data/' + location_name.lower() + '_cheap_flats_listings.csv'
+    # Check if new_df is empty
+    if new_df.empty:
+        print("No new listings to process.")
+        return pd.DataFrame()
+    
+    # Validate required columns
+    required_columns = ['propertyCode', 'price']
+    missing_columns = [col for col in required_columns if col not in new_df.columns]
+    if missing_columns:
+        print(f"Error: Missing required columns in new data: {missing_columns}")
+        return pd.DataFrame()
+
+    # Get the directory where this script is located, then go up one level to project root
+    script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    data_dir = os.path.join(script_dir, 'data')
+    filename = os.path.join(data_dir, f"{location_name.lower()}_listings.csv")
 
     if os.path.exists(filename):
-        current_df = pd.read_csv(filename)
-        print(current_df.head())
+        try:
+            current_df = pd.read_csv(filename)
+            print(f"Loaded {len(current_df)} existing listings from {filename}")
+            print(current_df.head())
+        except Exception as e:
+            print(f"Error reading CSV file: {e}")
+            return pd.DataFrame()
     else:
         print("CSV file does not exist.")
         return pd.DataFrame()
@@ -30,6 +57,11 @@ def daily_process(new_df, location_name = LOCATION_NAME):
 
     current_df['propertyCode'] = current_df['propertyCode'].astype(str).str.strip()
     current_df['price'] = current_df['price'].astype(float)
+    
+    # Handle parish_name field if it doesn't exist in current_df (for backward compatibility)
+    if 'parish_name' not in current_df.columns and 'parish_name' in new_df.columns:
+        print("Adding parish_name field to existing data...")
+        current_df['parish_name'] = 'Unknown'  # Default value for existing data
 
     new_listings = []
 

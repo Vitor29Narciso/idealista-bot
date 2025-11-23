@@ -38,7 +38,7 @@ RECIPIENT_EMAIL_ONE="recipient_one_email@example.com"
 RECIPIENT_EMAIL_TWO="recipient_two_email@example.com"
 RECIPIENT_EMAIL_THREE="recipient_three_email@example.com"
 ```
-**Note:** Replace the placeholders with your actual credentials.
+**Note:** Replace the placeholders with your actual credentials. You can use the `.env.example` as a template.
 
 ## File Structure
 

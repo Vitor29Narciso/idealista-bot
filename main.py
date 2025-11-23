@@ -31,7 +31,7 @@ def daily_task():
 
 def initial_run(location_name = LOCATION_NAME):
     
-    filename = '/Users/vitor29narciso/Documents/Tech Projects/Idealista Bot/Idealista-Bot/data/' + location_name.lower() + '_cheap_flats_listings.csv'
+    filename = '/Users/vitor29narciso/Documents/Tech Projects/Idealista Bot/Idealista-Bot/data/' + location_name.lower() + '_listings.csv'
 
     if not os.path.exists(filename):
         all_data = global_fetch()
