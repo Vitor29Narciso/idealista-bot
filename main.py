@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 import os
 
-load_dotenv("/Users/vitor29narciso/Documents/Tech Projects/Idealista Bot/Idealista-Bot/.env")
+load_dotenv()
 
 from idealista_bot.fetch_listings import global_fetch, daily_fetch
 from idealista_bot.process_listings import global_process, daily_process
@@ -31,7 +31,7 @@ def daily_task():
 
 def initial_run(location_name = LOCATION_NAME):
     
-    filename = '/Users/vitor29narciso/Documents/Tech Projects/Idealista Bot/Idealista-Bot/data/' + location_name.lower() + '_listings.csv'
+    filename = os.path.join('data', location_name.lower() + '_listings.csv')
 
     if not os.path.exists(filename):
         all_data = global_fetch()
